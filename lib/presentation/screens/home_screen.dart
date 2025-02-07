@@ -1,3 +1,4 @@
+import 'package:expense/presentation/screens/expense_summary_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/expense_model.dart';
@@ -49,15 +50,33 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddExpenseScreen()),
-          );
-        },
-      ),
+      floatingActionButton: Column(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    FloatingActionButton(
+      heroTag: 'summary',
+      child: Icon(Icons.bar_chart),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ExpenseSummaryScreen()),
+        );
+      },
+    ),
+    SizedBox(height: 10),
+    FloatingActionButton(
+      heroTag: 'add',
+      child: Icon(Icons.add),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddExpenseScreen()),
+        );
+      },
+    ),
+  ],
+),
+
     );
   }
 }
