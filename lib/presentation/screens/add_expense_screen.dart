@@ -5,6 +5,10 @@ import '../../data/models/expense_model.dart';
 import '../providers/expense_provider.dart';
 
 class AddExpenseScreen extends StatefulWidget {
+  final Expense? expense; // Nullable expense for editing
+
+  AddExpenseScreen({this.expense});
+
   @override
   _AddExpenseScreenState createState() => _AddExpenseScreenState();
 }
@@ -17,6 +21,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   String _selectedCategory = 'Food';
 
   final List<String> _categories = ['Food', 'Transport', 'Shopping', 'Bills', 'Other'];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.expense != null) {
+      _amountController.text = widget.expense!.amount.toString();
+      _descriptionController.text = widget.expense!.description;
+      _selectedDate = widget.expense!.date;
+      _selectedCategory = widget.expense!.category;
+    }
+  }
 
   void _pickDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -35,15 +50,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   void _saveExpense() {
     if (_formKey.currentState!.validate()) {
+      final isEditing = widget.expense != null;
       final newExpense = Expense(
-        id: Uuid().v4(),
+        id: isEditing ? widget.expense!.id : Uuid().v4(),
         amount: double.parse(_amountController.text),
         date: _selectedDate,
         description: _descriptionController.text,
         category: _selectedCategory,
       );
 
-      Provider.of<ExpenseProvider>(context, listen: false).addExpense(newExpense);
+      if (isEditing) {
+        Provider.of<ExpenseProvider>(context, listen: false).editExpense(newExpense);
+      } else {
+        Provider.of<ExpenseProvider>(context, listen: false).addExpense(newExpense);
+      }
 
       Navigator.pop(context);
     }
@@ -52,7 +72,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Expense')),
+      appBar: AppBar(title: Text(widget.expense == null ? 'Add Expense' : 'Edit Expense')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -101,7 +121,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveExpense,
-                child: Text('Save Expense'),
+                child: Text(widget.expense == null ? 'Save Expense' : 'Update Expense'),
               ),
             ],
           ),

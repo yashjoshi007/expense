@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import '../../data/local/expense_service.dart';
+import 'package:hive/hive.dart';
 import '../../data/models/expense_model.dart';
 
-class ExpenseProvider with ChangeNotifier {
-  final ExpenseService _service = ExpenseService();
-  List<Expense> _expenses = [];
+class ExpenseProvider extends ChangeNotifier {
+  final Box<Expense> _expenseBox = Hive.box<Expense>('expenseBox');
 
-  List<Expense> get expenses => _expenses;
+  List<Expense> get expenses => _expenseBox.values.toList();
 
-  void loadExpenses() {
-    _expenses = _service.getExpenses();
+  void addExpense(Expense expense) {
+    _expenseBox.put(expense.id, expense);
     notifyListeners();
   }
 
-  void addExpense(Expense expense) {
-    _service.addExpense(expense);
-    loadExpenses();
+  void editExpense(Expense expense) {
+    _expenseBox.put(expense.id, expense);
+    notifyListeners();
   }
 
   void deleteExpense(String id) {
-    _service.deleteExpense(id);
-    loadExpenses();
+    _expenseBox.delete(id);
+    notifyListeners();
+  }
+
+  void loadExpenses() {
+    notifyListeners();
   }
 }

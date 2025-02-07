@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../data/models/expense_model.dart';
 import '../providers/expense_provider.dart';
 import 'add_expense_screen.dart';
 
@@ -16,10 +17,35 @@ class HomeScreen extends StatelessWidget {
               itemCount: expenses.length,
               itemBuilder: (ctx, index) {
                 final expense = expenses[index];
-                return ListTile(
-                  title: Text(expense.description),
-                  subtitle: Text("${expense.amount.toStringAsFixed(2)} • ${expense.category}"),
-                  trailing: Text("${expense.date.toLocal()}".split(' ')[0]),
+                return Card(
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    title: Text(expense.description),
+                    subtitle: Text("${expense.amount.toStringAsFixed(2)} • ${expense.category}"),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddExpenseScreen(expense: expense),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            Provider.of<ExpenseProvider>(context, listen: false)
+                                .deleteExpense(expense.id);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
