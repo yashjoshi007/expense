@@ -1,9 +1,11 @@
 import 'package:expense/presentation/screens/expense_summary_screen.dart';
+import 'package:expense/presentation/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/models/expense_model.dart';
 import '../providers/expense_provider.dart';
 import 'add_expense_screen.dart';
+import '../../core/notifications/notifications_service.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -11,7 +13,20 @@ class HomeScreen extends StatelessWidget {
     final expenses = Provider.of<ExpenseProvider>(context).expenses;
 
     return Scaffold(
-      appBar: AppBar(title: Text('Expense Tracker')),
+      appBar: AppBar(
+        title: Text('Expense Tracker'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: expenses.isEmpty
           ? Center(child: Text("No expenses added yet."))
           : ListView.builder(
@@ -72,6 +87,30 @@ class HomeScreen extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (context) => AddExpenseScreen()),
         );
+      },
+    ),
+    SizedBox(height: 10),
+    FloatingActionButton(
+      heroTag: 'notify',
+      child: Icon(Icons.notifications),
+      onPressed: () {
+        NotificationService.showInstantNotification();
+      },
+    ),
+    SizedBox(height: 10),
+    FloatingActionButton(
+      heroTag: 'schedule',
+      child: Icon(Icons.timer),
+      onPressed: () {
+        NotificationService.scheduleNotification();
+      },
+    ),
+    SizedBox(height: 10),
+    FloatingActionButton(
+      heroTag: 'daily10pm',
+      child: Icon(Icons.access_time),
+      onPressed: () {
+        NotificationService.scheduleDailyNotificationAt10PM();
       },
     ),
   ],
