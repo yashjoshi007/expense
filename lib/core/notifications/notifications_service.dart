@@ -52,13 +52,20 @@ class NotificationService {
   //notif for 1 min
  static Future<void> scheduleNotification() async {
   tz.initializeTimeZones();
-  final location = tz.getLocation('Asia/Kolkata'); // Change to your timezone
-  final now = tz.TZDateTime.now(location);
 
-   final scheduledTime = now.add(Duration(minutes: 1)); // Schedule after 10 sec
+  final location = tz.getLocation('Asia/Kolkata');
+  tz.setLocalLocation(location); // Ensure local time zone is set globally
+
+  final now = DateTime.now();
+  final nowTZ = tz.TZDateTime.now(location);
+  final scheduledTime = nowTZ.add(Duration(seconds: 5));
+
+  print("📅 System Time: $now (Device Time)");
+  print("⏰ Kolkata Time: $nowTZ (${nowTZ.timeZoneName})");
+  print("🚀 Scheduling notification at: $scheduledTime");
 
   await _notificationsPlugin.zonedSchedule(
-    1, // Unique ID
+    1,
     'Scheduled Reminder',
     'Don’t forget to log your expenses!',
     scheduledTime,
@@ -71,11 +78,9 @@ class NotificationService {
         priority: Priority.high,
       ),
     ),
-    androidAllowWhileIdle: true, // Ensure it works in Doze mode
+    androidAllowWhileIdle: true,
     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
   );
-
-  print(" Notification scheduled at: $scheduledTime");
 }
 
   // Schedule notification every day at 10 PM

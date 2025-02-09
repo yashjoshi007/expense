@@ -6,24 +6,35 @@ import '../../data/models/expense_model.dart';
 import '../providers/expense_provider.dart';
 import 'add_expense_screen.dart';
 import '../../core/notifications/notifications_service.dart';
-
+import '../providers/auth_provider.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final expenses = Provider.of<ExpenseProvider>(context).expenses;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Expense Tracker'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsScreen()),
-              );
+          Row(
+            children: [
+              IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              authProvider.logout();
             },
+          ),
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
