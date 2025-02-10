@@ -29,20 +29,22 @@ class ExpenseProvider extends ChangeNotifier {
 
   // **Weekly Summary Calculation**
   Map<String, double> getWeeklySummary() {
-    final now = DateTime.now();
-    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
-    final endOfWeek = startOfWeek.add(Duration(days: 6));
+  final now = DateTime.now();
+  final startOfWeek = DateTime(now.year, now.month, now.day - (now.weekday - 1)); // Monday
+  final endOfWeek = startOfWeek.add(Duration(days: 6)); // Sunday
 
-    Map<String, double> weeklySummary = {};
+  Map<String, double> weeklySummary = {};
 
-    for (var expense in expenses) {
-      if (expense.date.isAfter(startOfWeek) && expense.date.isBefore(endOfWeek)) {
-        weeklySummary[expense.category] = (weeklySummary[expense.category] ?? 0) + expense.amount;
-      }
+  for (var expense in expenses) {
+    if ((expense.date.isAfter(startOfWeek) || expense.date.isAtSameMomentAs(startOfWeek)) && 
+        expense.date.isBefore(endOfWeek)) {
+      weeklySummary[expense.category] = (weeklySummary[expense.category] ?? 0) + expense.amount;
     }
-
-    return weeklySummary;
   }
+
+  return weeklySummary;
+}
+
 
   // **Monthly Summary Calculation**
   Map<String, double> getMonthlySummary() {
